@@ -1,0 +1,115 @@
+Table auction {
+  auction_id integer [pk, increment]
+  date date [not null]
+  place varchar(255) [not null]
+  time time [not null]
+  specifics text
+  location_id integer [not null, ref: > auction_location.location_id]
+}
+
+Table person {
+  person_id integer [pk, increment]
+  name varchar(255) [not null]
+  contact_info varchar(255) [not null]
+  is_seller boolean [not null]
+  is_buyer boolean [not null]
+  user_account_id integer [not null, ref: > user_account.user_account_id]
+}
+
+Table item {
+  item_id integer [pk, increment]
+  lot_number integer [not null]
+  auction_id integer [not null, ref: > auction.auction_id]
+  seller_id integer [not null, ref: > person.person_id]
+  starting_price decimal(10, 2) [not null]
+  description text [not null]
+  category_id integer [not null, ref: > category.category_id]
+}
+
+Table sold_items {
+  item_id integer [pk, ref: > item.item_id]
+  buyer_id integer [not null, ref: > person.person_id]
+  actual_price decimal(10, 2) [not null]
+}
+
+Table category {
+  category_id integer [pk, increment]
+  name varchar(255) [not null, unique]
+}
+
+Table item_image {
+  image_id integer [pk, increment]
+  item_id integer [not null, ref: > item.item_id]
+  image_url varchar(255) [not null]
+}
+
+Table bid_history {
+  bid_id integer [pk, increment]
+  item_id integer [not null, ref: > item.item_id]
+  bid_amount decimal(10, 2) [not null]
+  bidder_id integer [not null, ref: > person.person_id]
+  bid_time timestamp [not null]
+}
+
+Table employee {
+  employee_id integer [pk, increment]
+  name varchar(255) [not null]
+  contact_info varchar(255) [not null]
+  job_title varchar(255) [not null]
+}
+
+Table employee_auction {
+  employee_id integer [pk, ref: > employee.employee_id]
+  auction_id integer [pk, ref: > auction.auction_id]
+}
+
+Table employee_categories {
+  employee_id integer [pk, ref: > employee.employee_id]
+  category_id integer [pk, ref: > category.category_id]
+}
+
+Table payment {
+  payment_id integer [pk, increment]
+  buyer_id integer [not null, ref: > person.person_id]
+  sold_item_id integer [not null, ref: > sold_items.item_id]
+  payment_method varchar(255) [not null]
+  payment_status varchar(255) [not null]
+  payment_date date [not null]
+}
+
+Table shipment {
+  shipment_id integer [pk, increment]
+  sold_item_id integer [not null, ref: > sold_items.item_id]
+  buyer_id integer [not null, ref: > person.person_id]
+  shipping_address varchar(255) [not null]
+  tracking_number varchar(255) [not null]
+  shipped_date date [not null]
+  delivery_date date
+}
+
+Table auction_location {
+  location_id integer [pk, increment]
+  address varchar(255) [not null]
+  city varchar(255) [not null]
+  state varchar(255) [not null]
+  zip_code varchar(255) [not null]
+  country varchar(255) [not null]
+}
+
+Table user_account {
+  user_account_id integer [pk, increment]
+  person_id integer [not null, unique, ref: > person.person_id]
+  username varchar(255) [not null, unique]
+  email varchar(255) [not null, unique]
+  password varchar(255) [not null]
+  account_created_date timestamp [not null]
+}
+
+Table seller_fees {
+  seller_fee_id integer [pk, increment]
+  item_id integer [not null, ref: > item.item_id]
+  fee_amount decimal(10, 2) [not null]
+  fee_description text [not null]
+  payment_status varchar(255) [not null]
+  payment_date date
+}
